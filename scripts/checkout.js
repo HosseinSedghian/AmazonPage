@@ -1,5 +1,13 @@
+import {cart} from '../data/cart.js';
+import {products} from '../data/products.js';
 let finalHtml = '';
 cart.forEach((item) => {
+    let matchingProduct;
+    products.forEach((prd) => {
+      if(prd.id === item.id) {
+        matchingProduct = prd;
+      }
+    });
     let html = `
     <div class="cart-item-container">
             <div class="delivery-date">
@@ -8,18 +16,18 @@ cart.forEach((item) => {
 
             <div class="cart-item-details-grid">
               <img class="product-image"
-                src="images/products/athletic-cotton-socks-6-pairs.jpg">
+                src="${matchingProduct.image}">
 
               <div class="cart-item-details">
                 <div class="product-name">
-                  Black and Gray Athletic Cotton Socks - 6 Pairs
+                  ${matchingProduct.name}
                 </div>
                 <div class="product-price">
-                  $10.90
+                  $${matchingProduct.priceCents / 100}
                 </div>
                 <div class="product-quantity">
                   <span>
-                    Quantity: <span class="quantity-label">2</span>
+                    Quantity: <span class="quantity-label">${item.quantity}</span>
                   </span>
                   <span class="update-quantity-link link-primary">
                     Update
