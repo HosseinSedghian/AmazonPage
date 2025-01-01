@@ -2,7 +2,7 @@ import {cart, removeFromCart} from '../data/cart.js';
 import {products} from '../data/products.js';
 import {formatCurrency} from './utils/money.js';
 updateOrderPage();
-
+updateCheckoutTitle();
 function updateOrderPage() {
   let finalHtml = '';
   cart.forEach((item) => {
@@ -102,4 +102,11 @@ function updateOrderPage() {
         updateOrderPage();
       });
     });
+}
+
+function updateCheckoutTitle () {
+  if (cart) {
+    document.querySelector('.js-return-to-home-link')
+      .innerHTML = `${cart.length} items`;
+  }
 }
