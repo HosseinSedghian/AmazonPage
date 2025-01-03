@@ -1,4 +1,4 @@
-import {cart, removeFromCart} from '../data/cart.js';
+import {cart, removeFromCart, updateDeliveryOptions} from '../data/cart.js';
 import {products} from '../data/products.js';
 import {formatCurrency} from './utils/money.js';
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
@@ -64,17 +64,26 @@ function updateOrderPage() {
           </div>
     `;
     finalHtml += html;
-});
-    document.querySelector('.js-order-summary')
-        .innerHTML = finalHtml;
+  });
+  document.querySelector('.js-order-summary')
+    .innerHTML = finalHtml;
 
-    document.querySelectorAll('.js-delete-quantity-link')
-    .forEach((deletebtn) => {
-      deletebtn.addEventListener('click', () => {
-        const cartId = deletebtn.dataset.itemId;
-        removeFromCart(cartId);
+  document.querySelectorAll('.js-delete-quantity-link')
+  .forEach((deletebtn) => {
+    deletebtn.addEventListener('click', () => {
+      const cartId = deletebtn.dataset.itemId;
+      removeFromCart(cartId);
+      updateOrderPage();
+    });
+  });
+
+  // ssss
+  document.querySelectorAll('.js-delivery-option-input')
+    .forEach((radioInput) => {
+      radioInput.addEventListener('click', () => {
+        updateDeliveryOptions(radioInput.dataset.productId, radioInput.dataset.deliveryoptionId);
         updateOrderPage();
-      });
+      })
     });
 }
 
@@ -96,7 +105,9 @@ function deliveryOptionsHTML(matchingProduct, item) {
     <div class="delivery-option">
       <input type="radio" 
         ${isChecked ? "checked" : ''}
-        class="delivery-option-input"
+        data-deliveryoption-id= ${delOpt.id}
+        data-product-id = ${matchingProduct.id}
+        class="delivery-option-input js-delivery-option-input"
         name="delivery-option-${matchingProduct.id}">
       <div>
 
