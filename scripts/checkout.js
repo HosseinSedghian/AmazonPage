@@ -1,6 +1,9 @@
 import {cart, removeFromCart} from '../data/cart.js';
 import {products} from '../data/products.js';
 import {formatCurrency} from './utils/money.js';
+import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
+import {deliveryOptions} from '../data/deliveryOptions.js';
+
 updateOrderPage();
 updateCheckoutTitle();
 function updateOrderPage() {
@@ -12,10 +15,20 @@ function updateOrderPage() {
         matchingProduct = prd;
       }
     });
+    const deliveryOptionId = item.deliveryOptionId;
+    let deliveryOption;
+    deliveryOptions.forEach((opt) => {
+      if (opt.id === deliveryOptionId) {
+        deliveryOption = opt;
+      }
+    });
+    const today = dayjs();
+    let deliveryDate = today.add(deliveryOption.deliveryDays, 'day');
+    const dateString = deliveryDate.format("dddd, MMMM D");
     let html = `
     <div class="cart-item-container">
             <div class="delivery-date">
-              Delivery date: Tuesday, June 21
+              Delivery date: ${dateString}
             </div>
 
             <div class="cart-item-details-grid">
@@ -41,50 +54,11 @@ function updateOrderPage() {
                   </span>
                 </div>
               </div>
-
               <div class="delivery-options">
                 <div class="delivery-options-title">
                   Choose a delivery option:
                 </div>
-                <div class="delivery-option">
-                  <input type="radio" checked
-                    class="delivery-option-input"
-                    name="delivery-option-${matchingProduct.id}">
-                  <div>
-                    <div class="delivery-option-date">
-                      Tuesday, June 21
-                    </div>
-                    <div class="delivery-option-price">
-                      FREE Shipping
-                    </div>
-                  </div>
-                </div>
-                <div class="delivery-option">
-                  <input type="radio"
-                    class="delivery-option-input"
-                    name="delivery-option-${matchingProduct.id}">
-                  <div>
-                    <div class="delivery-option-date">
-                      Wednesday, June 15
-                    </div>
-                    <div class="delivery-option-price">
-                      $4.99 - Shipping
-                    </div>
-                  </div>
-                </div>
-                <div class="delivery-option">
-                  <input type="radio"
-                    class="delivery-option-input"
-                    name="delivery-option-${matchingProduct.id}">
-                  <div>
-                    <div class="delivery-option-date">
-                      Monday, June 13
-                    </div>
-                    <div class="delivery-option-price">
-                      $9.99 - Shipping
-                    </div>
-                  </div>
-                </div>
+              ${deliveryOptionsHTML(matchingProduct, item)}
               </div>
             </div>
           </div>
@@ -109,4 +83,34 @@ function updateCheckoutTitle () {
     document.querySelector('.js-return-to-home-link')
       .innerHTML = `${cart.length} items`;
   }
+}
+
+function deliveryOptionsHTML(matchingProduct, item) {
+  let finalHtml = '';
+  deliveryOptions.forEach((delOpt) => {
+    const today = dayjs();
+    let deliveryDate = today.add(delOpt.deliveryDays, 'day');
+    const priceString = delOpt.priceCents === 0 ? "FREE" : `$${formatCurrency(delOpt.priceCents)} - `;
+    const isChecked = item.deliveryOptionId === delOpt.id;
+    finalHtml += `
+    <div class="delivery-option">
+      <input type="radio" 
+        ${isChecked ? "checked" : ''}
+        class="delivery-option-input"
+        name="delivery-option-${matchingProduct.id}">
+      <div>
+
+        <div class="delivery-option-date">
+          ${deliveryDate.format('dddd, MMMM D')}
+        </div>
+
+        <div class="delivery-option-price">
+          ${priceString} Shipping
+        </div>
+
+      </div>
+    </div>
+  `;
+  });
+  return finalHtml;
 }
