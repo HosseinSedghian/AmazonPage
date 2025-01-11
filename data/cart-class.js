@@ -1,4 +1,4 @@
-class Cart {
+export class Cart {
     cartItems;
     #localstoragekey;
 
@@ -26,7 +26,7 @@ class Cart {
         }
         else {
             this.cartItems.push({
-                id: cartId,
+                id: productId,
                 quantity: 1,
                 deliveryOptionId: '1'
             });
@@ -42,7 +42,7 @@ class Cart {
             }
         });
         this.cartItems = newCart;
-        saveToStorage();
+        this.saveToStorage();
     }
 
     updateDeliveryOptions(productId, deliveryOptionId) {

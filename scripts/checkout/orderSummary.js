@@ -1,4 +1,4 @@
-import {cart, removeFromCart, updateDeliveryOptions} from '../../data/cart.js';
+import {Cart} from '../../data/cart-class.js';
 import {products} from '../../data/products.js';
 import {formatCurrency} from '../utils/money.js';
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
@@ -7,7 +7,8 @@ import {renderPaymentSummary} from './paymentSummary.js';
 
 export function updateOrderPage() {
   let finalHtml = '';
-  cart.forEach((item) => {
+  const cartInstance = new Cart('cart');
+  cartInstance.cartItems.forEach((item) => {
     let matchingProduct;
     products.forEach((prd) => {
       if(prd.id === item.id) {
@@ -71,14 +72,14 @@ export function updateOrderPage() {
   .forEach((deletebtn) => {
     deletebtn.addEventListener('click', () => {
       const cartId = deletebtn.dataset.itemId;
-      removeFromCart(cartId);
+      cartInstance.removeFromCart(cartId);
       updateOrderPage();
     });
   });
   document.querySelectorAll('.js-delivery-option-input')
     .forEach((radioInput) => {
       radioInput.addEventListener('click', () => {
-        updateDeliveryOptions(radioInput.dataset.productId, radioInput.dataset.deliveryoptionId);
+        cartInstance.updateDeliveryOptions(radioInput.dataset.productId, radioInput.dataset.deliveryoptionId);
         updateOrderPage();
       })
     });
@@ -86,9 +87,10 @@ export function updateOrderPage() {
 }
 
 export function updateCheckoutTitle () {
-  if (cart) {
+  const cartInstance = new Cart('cart');
+  if (cartInstance.cartItems) {
     document.querySelector('.js-return-to-home-link')
-      .innerHTML = `${cart.length} items`;
+      .innerHTML = `${cartInstance.cartItems.length} items`;
   }
 }
 
